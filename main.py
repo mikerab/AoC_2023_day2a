@@ -1,3 +1,6 @@
+# Version 1 used no function
+# Version 2 moves the determination to a function
+
 num_lines = 0
 master_sum = 0
 

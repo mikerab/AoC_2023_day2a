@@ -9,6 +9,50 @@ MAX_RED = 12
 MAX_GREEN = 13
 MAX_BLUE = 14
 
+def determine_valid_pull(pull):
+    """Determines if a bag pull is valid by checking that each group's colors
+    do not exceed the maximums
+
+    args:
+    pull (String): a semi-colon separated list of cubes and color count
+
+    :return:
+    Returns True if the pull is valid and False if not
+    """
+    valid = True
+
+    # for the game, divide the cubes
+    cubes = pull.split(",")
+
+    # for each cube determine the color and the count
+    for cube in cubes:
+        cube = cube.strip()
+        pair = cube.split(" ")
+        color = pair[1]
+        count = pair[0]
+        # print(f"for color {color}, the count is {count}")
+
+        # now compare the color's count against the max color value. If greater, the game is invalid
+        match color:
+            case 'blue':
+                if int(count) > MAX_BLUE:
+                    valid = False
+                    break
+            case 'green':
+                if int(count) > MAX_GREEN:
+                    valid = False
+                    break
+            case 'red':
+                if int(count) > MAX_RED:
+                    valid = False
+                    break
+
+    # I think i need a break here to break out of the for loop
+    if not valid:
+        return False
+    return True
+
+
 # Open a document
 doc = open('input.txt', 'rt')
 
@@ -20,63 +64,34 @@ for line in doc:
     valid_game = True
 
     # Determine the game ID and store it
-    id_split = line.split(":", 1)
-    print(id_split[0])
-    game_id = id_split[0]
+
+    # Split the line into title and pulls
+    temp = line.split(":")
+    title = temp[0]
+    tmp2 = temp[1]
+
+    print(f"Game Title: {title}")
+    temp = title.split(" ")
+    game_id = int(temp[1])
 
     # Split the games
-    games = id_split[1].split(";")
+    pulls = tmp2.split(";")
     print('-----------------------')
     print(line)
 
 
     # Analyze each game and determine if it meets the criteria
-    for game in games:
-
-        # for the game, divide the cubes
-        cubes = game.split(",")
-
-        # for each cube determine the color and the count
-        for cube in cubes:
-            cube = cube.strip()
-            pair = cube.split(" ")
-            color = pair[1]
-            count = pair[0]
-            # print(f"for color {color}, the count is {count}")
-
-            # now compare the color's count against the max color value. If greater, the game is invalid
-            match color:
-                case 'blue':
-                    if int(count) > MAX_BLUE:
-                        valid_game = False
-                        break
-                case 'green':
-                    if int(count) > MAX_GREEN:
-                        valid_game = False
-                        break
-                case 'red':
-                    if int(count) > MAX_RED:
-                        valid_game = False
-                        break
-
-        # I think i need a break here to break out of the for loop
+    for pull in pulls:
+        valid_game = determine_valid_pull(pull)
+        # stop processing more pulls
         if not valid_game:
-            # print(f"Game {game_id} is not valid.")
             break
-
-    game_id = game_id.split(" ")
-    num_to_sum = int(game_id[1])
 
     if valid_game:
         print(f"Game {game_id} is valid and should be added.")
-        master_sum = master_sum + num_to_sum
+        master_sum = master_sum + game_id
     else:
         print(f"Game {game_id} is NOT VALID")
-
-        # If we got here, the set was valid
-
-
-
 
 # Close the document
 doc.close()
